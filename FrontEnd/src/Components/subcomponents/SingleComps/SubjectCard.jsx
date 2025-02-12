@@ -9,19 +9,21 @@ import FloatingSub from './FloatingSub';
 
 export default function SubjectCard({_id ,subName,teacherName,percentageRequired ,absent,present}) {
   const total = Number(present)+ Number(absent);
-  let precentage = 100;
+  let percentage = 100;
   if(total != 0){
-    precentage = (Number(present)/total)*100;
+    const num = (Number(present)/total)*100;
+    percentage = Number(num.toFixed(1));
   }
+   const currColor = percentage < percentageRequired ? "red":"";
   return (
     <Card variant="solid" color="primary" invertedColors sx={{width:"300px", margin:"20px"}}>
       <CardContent orientation="horizontal">
-        <CircularProgress size="lg" determinate value={precentage} >
-        {precentage}% 
+        <CircularProgress size="lg"  determinate value={percentage} sx={{color:currColor}} >
+        {percentage}% 
         </CircularProgress>
         <CardContent>
           <Typography level="body-md">{subName}</Typography>
-          <Typography level="h2">{present}/ {total}</Typography>
+          <Typography level="h2">{present}/ {total} </Typography>
         </CardContent>
       </CardContent>
       <CardActions>

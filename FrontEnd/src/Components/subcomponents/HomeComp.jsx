@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {Typography} from '@mui/material'
 import { UserData } from '../../Context/UserContext'
-import SubjectCard from './SingleComps/subjectCard'
+import SubjectCard from './SingleComps/SubjectCard'
 const HomeComp = () => {
   const {user, userName, userSubs} = UserData();
   const data = userSubs.current;

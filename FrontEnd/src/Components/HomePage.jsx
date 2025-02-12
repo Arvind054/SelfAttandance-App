@@ -14,6 +14,7 @@ const drawerWidth = 240;
 
 export default function HomePage() {
     const [active, setActive] = useState("Home");
+    const [open, setOpen] = useState(false);
     const {isAuth, UserLogin, userEmail,getUserData} = UserData();
     const navigator = useNavigate();
     useEffect(()=>{
@@ -33,7 +34,7 @@ export default function HomePage() {
 
             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                 <Toolbar>
-                    <IconButton color="inherit" edge="start"  sx={{ mr: 2 }}>
+                    <IconButton color="inherit" edge="start"  sx={{ mr: 2 }} onClick={()=>{setOpen(!open)}}>
                         <MenuIcon/>
                     </IconButton>
                     <Typography variant="h6" noWrap>
@@ -43,10 +44,11 @@ export default function HomePage() {
             </AppBar>
 
             {/* Sidebar Drawer */}
-            <Drawer variant="permanent" sx={{
+            {!open &&
+                        <Drawer variant="permanent" sx={{
                 width: drawerWidth,
                 flexShrink: 0,
-                "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box" },
+                "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box"},
             }}>
                 <Toolbar /> {/* Keeps content below AppBar */}
                 <List>
@@ -76,7 +78,7 @@ export default function HomePage() {
                     </ListItem>
                 </List>
             </Drawer>
-
+             }
             {/* Main Content */}
             <Box component="main" sx={{ flexGrow: 1, p: 3   }}>
                 <Toolbar /> {/* Space for AppBar */}
