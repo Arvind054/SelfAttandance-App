@@ -49,7 +49,7 @@ const SignUpPage = () => {
           
           <Button variant="contained" onClick={handleSignUp}>Login</Button> 
           <i>already a user ? <a href="/Login">Login</a></i>
-                            <Button variant='outlined'> Continue With Google</Button> 
+                           
           </div>
            
         </Box>

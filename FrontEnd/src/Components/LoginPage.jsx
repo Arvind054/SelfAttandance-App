@@ -47,7 +47,7 @@ const LoginPage = () => {
           
           <Button variant="contained" onClick={handleLogin}>Login</Button> 
           <i>new User? <a href="/signUp">signUp</a></i>
-                            <Button variant='outlined'> Continue With Google</Button> 
+                          
           </div>
            
         </Box>
