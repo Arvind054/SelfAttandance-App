@@ -11,7 +11,7 @@ const HomeComp = () => {
      <Typography variant="h4">Welcome Back, {userName} 👋</Typography>
      <div className="HomePageContainer">
         <h3>Dashboard</h3>
-        <div className="dataContaoner" style={{display:"flex", flexWrap:"wrap"}}>
+        <div className="dataContainer" style={{display:"flex", flexWrap:"wrap"}}>
           {(!data || data.length === 0) && "No Classes Added ,Yet"}
         {data && data.map((element, index)=>{
           const { subName,teacherName,PercentageRequires,absent, present, _id} = element;
@@ -22,7 +22,7 @@ const HomeComp = () => {
           teacherName={teacherName}
           percentageRequired={PercentageRequires}
           absent={absent}
-          present={present}></SubjectCard>
+          present={present} key={index}></SubjectCard>
           )
         })}
           </div>

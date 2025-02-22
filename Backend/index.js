@@ -1,6 +1,6 @@
 const express = require('express');
 const PORT = process.env.PORT || 3000;
-const {Users, Subjects, Class} = require("./Models/Schema.js");
+const {ClassUsers, Subjects, Class} = require("./Models/Schema.js");
 const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const bcrypt = require('bcrypt');
@@ -22,7 +22,7 @@ async function dbConnection(){
 //User Login
 app.get("/login", async(req, res)=>{
     const {email, password} = req.query;
-    const user = await Users.findOne({email:email});
+    const user = await ClassUsers.findOne({email:email});
     if(user.password != '' || user.password != undefined){
        bcrypt.compare(password, user.password, (err, result)=>{
         if(err){
@@ -44,14 +44,19 @@ app.get("/login", async(req, res)=>{
 app.post("/signUp", async(req, res)=>{
     try{
         const {name, email, password} = req.body.params;
+        if(!name  || !email || !password){
+            res.status(404).send("Invalid credientials");
+            
+        }else{
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
-        const newUser = new Users({name:name,email:email,password:hashedPass});
+        const newUser = new ClassUsers({name:name,email:email,password:hashedPass});
         await newUser.save();
         const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, { expiresIn: '14d' });
-                res.send({token:token});
-       
+        res.send({token:token});
+        }
     }catch(err){
+        console.log(err);
          res.status(404).send("Invalid credientials");
     }
 });
@@ -74,7 +79,7 @@ app.get("/get/all", async(req, res)=>{
         if(err){
             res.status(401).send("Invalid Token");
         }else{
-            const data = await Users.findOne({email:decoded.email}).populate('subjects');
+            const data = await ClassUsers.findOne({email:decoded.email}).populate('subjects');
             res.send({data:data});
         }
     })
@@ -85,7 +90,7 @@ app.post("/subject/new", async(req, res)=>{
         const {subject, Teacher,PercentageRequired, email} = req.body.params;
         const newSub  = new Subjects({subName:subject, teacherName:Teacher, PercentageRequires:PercentageRequired,present:0, absent: 0});
         await newSub.save();
-        const user = await Users.findOne({email: email});
+        const user = await ClassUsers.findOne({email: email});
         user.subjects.push(newSub);
         await user.save();
         res.send("Added Successfully");
@@ -95,6 +100,7 @@ app.post("/subject/new", async(req, res)=>{
     }
    
 });
+//Mark attandance
 app.post("/subject/mark", async(req, res)=>{
    try{
       const {email, subjectId, value} = req.body.params;
@@ -107,6 +113,28 @@ app.post("/subject/mark", async(req, res)=>{
    }catch{
         res.status(401).send("Error Updating Data");
    }
+});
+// Edit Subject data.
+app.post("/subject/edit", async(req, res)=>{
+    try{
+       const {_id,subjectName,teacherName,percentageReq,presentCnt,absentCnt} = req.body.params;
+     const subject = await Subjects.findByIdAndUpdate(_id, {subName:subjectName,teacherName:teacherName,PercentageRequires: percentageReq,present:presentCnt,absent:absentCnt});
+   }catch(e){
+    res.status(401).send("Error Occured while updating");
+   }
+});
+app.delete("/subject/delete", async(req, res)=>{
+    const {id, email} = req.query;
+    try{
+       const user = await ClassUsers.findOne({email:email});
+       if(!user){
+        res.status(401).send("Error Occured");
+       }
+       await ClassUsers.findOneAndUpdate({email},{$pull:{subjects:id}}, {new:true});
+       await Subjects.findByIdAndDelete(id);
+    }catch(e){
+        res.status(401).send("Error Occured");
+    }
 })
 app.listen(PORT, ()=>{
     console.log("App is Listening to Port");

@@ -15,19 +15,35 @@ const drawerWidth = 240;
 export default function HomePage() {
     const [active, setActive] = useState("Home");
     const [open, setOpen] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const {isAuth, UserLogin, userEmail,getUserData} = UserData();
     const navigator = useNavigate();
     useEffect(()=>{
         if(isAuth === false){
             navigator("/login");
         }
-       
+      
     }, [isAuth]);
     useEffect(()=>{
         if(isAuth){
             getUserData();
         }
+        
     }, []);
+    useEffect(() => {
+        const handleResize = () => {
+          setWindowWidth(window.innerWidth);
+          if (window.innerWidth <= 400) {
+            setOpen(true); 
+          } else {
+            setOpen(false);
+          }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      });
     return (
         <Box sx={{ display: "flex" }}>
             <CssBaseline />

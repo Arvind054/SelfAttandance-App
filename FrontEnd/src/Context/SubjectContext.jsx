@@ -6,8 +6,6 @@ import toast from "react-hot-toast";
 const SubjectContext = createContext();
 export const SubjectProvider = ({children})=>{
     const {user, userEmail,getUserData} = UserData();
-
-
   async function AddSubject(subject, Teacher, PercentageRequired){
     if(!subject || !Teacher || !PercentageRequired){
       toast.error("All fields are required");
@@ -35,7 +33,6 @@ export const SubjectProvider = ({children})=>{
     }
   }
   async function MarkAttandance(subjectId, value){
-    console.log("req, receivec", subjectId, value);
        try{
             const response  = await axios.post(`${server}/subject/mark`,{
               params:{
@@ -49,8 +46,41 @@ export const SubjectProvider = ({children})=>{
           toast.error("Error While Marking, please Try again");
        }
   }
+  async function EditSubject(_id,subjectName,teacherName,percentageReq,presentCnt,absentCnt){
+   try{
+      const response = await axios.post(`${server}/subject/edit`, {
+        params:{
+          _id: _id,
+          subjectName:subjectName,
+          teacherName:teacherName,
+          percentageReq:percentageReq,
+          presentCnt:presentCnt,
+          absentCnt:absentCnt,
+        }
+      });
+      toast.success("changes Saved");
+      getUserData();
+   }catch(e){
+    toast.error("error Updating subject, try Again");
+   }
+  }
+  async function DeleteSubject(_id){
+
+    try{
+       const response = await axios.delete(`${server}/subject/delete`, {
+        params:{
+          id: _id,
+          email: userEmail,
+        }
+       });
+       getUserData();
+    }
+    catch(e){
+      toast.error("Error Deleting subject");
+    }
+  }
     return (
-        <SubjectContext.Provider value={{AddSubject,MarkAttandance}}>{children}</SubjectContext.Provider>
+        <SubjectContext.Provider value={{AddSubject,MarkAttandance, EditSubject, DeleteSubject}}>{children}</SubjectContext.Provider>
     )
 }
 
